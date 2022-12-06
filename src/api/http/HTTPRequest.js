@@ -1,4 +1,7 @@
 import { kase } from 'kase';
+
+import { Server } from 'api/Server';
+
 import { NetworkRequestFailedError } from "./Error";
 import { HTTPContentType, HTTPHeader, HTTPHeaderKey } from "./HTTPHeader";
 import { HTTPMethod } from "./HTTPMethod";
@@ -37,7 +40,7 @@ export class HTTPRequest {
      * @returns Promise
      */
     get(path, header={}, query={}) {
-        path = path + this._queryBuilder(query)
+        path = `${Server.BaseURL}/${path}/${this._queryBuilder(query)}`;
 
         const reqHeader = this._headerBuilder({
             ...header,
@@ -75,6 +78,8 @@ export class HTTPRequest {
      * @returns Promise
      */
     post(path, header={}, body) {
+        path = `${Server.BaseURL}/${path}/}`;
+
         const reqHeader = this._headerBuilder({
             ...header,
             method: HTTPMethod.Post,
@@ -112,6 +117,8 @@ export class HTTPRequest {
      * @returns Promise
      */
     put(path, header={}, body) {
+        path = `${Server.BaseURL}/${path}/}`;
+
         const reqHeader = this._headerBuilder({
             ...header,
             method: HTTPMethod.Put,
@@ -142,6 +149,8 @@ export class HTTPRequest {
      * @returns Promise
      */
     delete(path, header={}) {
+        path = `${Server.BaseURL}/${path}/}`;
+
         const reqHeader = this._headerBuilder({
             ...header,
             method: HTTPMethod.Delete
