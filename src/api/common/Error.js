@@ -1,3 +1,18 @@
+export class NetworkRequestFailedError extends Error {
+    /**
+     * Construct `NetworkRequestFailedError`.
+     * @param {Object} details Error's detail
+     */
+     constructor(details={}) {
+        const {message, error} = details;
+
+        super(message);
+
+        this.name = "NetworkRequestFailedError";
+        this.detail = error;
+    }
+}
+
 export class UnauthorizedError extends Error {
     /**
      * Construct `UnauthorizedError`.
