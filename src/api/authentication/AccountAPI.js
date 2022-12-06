@@ -39,7 +39,7 @@ class AccountAPI extends HTTPRequest {
      */
     getAccount(token) {
         const path = `${this.path}/me/`;
-        const header = {token}
+        const header = {token};
 
         return this.get(path, header);
     }
@@ -74,7 +74,7 @@ class AccountAPI extends HTTPRequest {
      * @returns Object
      */
     createAccount(user) {
-        const header = {}
+        const header = {};
 
         return this.post(this.path, header, user);
     }
@@ -110,12 +110,12 @@ class AccountAPI extends HTTPRequest {
      */
     updateAccount(token, user) {
         const path = `${this.path}/me/`;
-        const header = {token}
+        const header = {token};
 
         return this.put(path, header, user);
     }
 }
 
-const accountApi = AccountAPI.getInstance()
+const accountApi = AccountAPI.getInstance();
 
 export default accountApi;

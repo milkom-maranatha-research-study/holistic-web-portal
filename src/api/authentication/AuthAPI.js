@@ -44,7 +44,7 @@ class AuthAPI extends HTTPRequest {
      */
     login(username, password) {
         const path = `${this.path}/login/`;
-        const header = {basicAuth: {username, password}}
+        const header = {basicAuth: {username, password}};
 
         return this.post(path, header);
     }
@@ -56,7 +56,7 @@ class AuthAPI extends HTTPRequest {
      */
     logout(token) {
         const path = `${this.path}/logout/`;
-        const header = {token}
+        const header = {token};
 
         return this.post(path, header);
     }
@@ -68,12 +68,12 @@ class AuthAPI extends HTTPRequest {
      */
     logoutAll(token) {
         const path = `${this.path}/logout/`;
-        const header = {token}
+        const header = {token};
 
         return this.post(path, header);
     }
 }
 
-const authApi = AuthAPI.getInstance()
+const authApi = AuthAPI.getInstance();
 
 export default authApi;

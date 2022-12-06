@@ -45,7 +45,7 @@ export class HTTPRequest {
         const reqHeader = this._headerBuilder({
             ...header,
             method: HTTPMethod.Get
-        })
+        });
 
         return fetch(path, reqHeader)
             .catch(error => {
@@ -84,7 +84,7 @@ export class HTTPRequest {
             ...header,
             method: HTTPMethod.Post,
             body: JSON.stringify(this._convertBodyToSnakeCase(body))
-        })
+        });
 
         return fetch(path, reqHeader)
             .catch(error => {
@@ -123,7 +123,7 @@ export class HTTPRequest {
             ...header,
             method: HTTPMethod.Put,
             body: JSON.stringify(this._convertBodyToSnakeCase(body))
-        })
+        });
 
         return fetch(path, reqHeader)
             .catch(error => {
@@ -154,7 +154,7 @@ export class HTTPRequest {
         const reqHeader = this._headerBuilder({
             ...header,
             method: HTTPMethod.Delete
-        })
+        });
 
         return fetch(path, reqHeader)
             .catch(error => {

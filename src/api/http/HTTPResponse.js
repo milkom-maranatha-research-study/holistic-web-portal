@@ -35,22 +35,22 @@ export class HTTPResponse {
 
             // Bad requests, request's payload sent by Client might be incorrect.
             else if (statusCode === 400) {
-                return response.json().then(jsonBody => reject(new BadRequestError({detail: jsonBody})))
+                return response.json().then(jsonBody => reject(new BadRequestError({detail: jsonBody})));
             }
 
             // Endpoint doesn't exists.
             else if (statusCode === 404) {
-                return response.json().then(jsonBody => reject(new NotFoundError({detail: jsonBody})))
+                return response.json().then(jsonBody => reject(new NotFoundError({detail: jsonBody})));
             }
 
             // Client's is not allowed to use the endpoint.
             else if (statusCode === 403) {
-                return response.json().then(jsonBody => reject(new ForbiddenError({detail: jsonBody})))
+                return response.json().then(jsonBody => reject(new ForbiddenError({detail: jsonBody})));
             }
 
             // Client's is not authenticated.
             else if (statusCode === 401) {
-                return response.json().then(jsonBody => reject(new UnauthorizedError({detail: jsonBody})))
+                return response.json().then(jsonBody => reject(new UnauthorizedError({detail: jsonBody})));
             }
 
             // Backend failure, Client's requests can't be procceed.
