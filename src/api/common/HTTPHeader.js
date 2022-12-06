@@ -40,7 +40,7 @@ export class HTTPHeader {
      * @param {String} token User's auth token
      * @returns String
      */
-     static getAuthorizationTokenString(token) {
+    static getAuthorizationTokenString(token) {
         return 'Token ' + token;
     }
 }
