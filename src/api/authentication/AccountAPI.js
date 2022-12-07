@@ -86,8 +86,6 @@ class AccountAPI extends HTTPRequest {
      * ```
      * {
      *   email: "email",
-     *   newPassword: "newpassword",
-     *   oldPassword: "oldpassword",
      *   firstName: "First Name",
      *   lastName: "Last Name"
      * }
@@ -113,6 +111,32 @@ class AccountAPI extends HTTPRequest {
         const header = {token};
 
         return this.put(path, header, user);
+    }
+
+    /**
+     * Update user's account information with that `user` object.
+     * 
+     * Response data example:
+     * ```
+     * {
+     *   id: 1,
+     *   username: "username",
+     *   email: "username@mail.com",
+     *   firstName: "First name",
+     *   lastName: "Last name",
+     *   isActive: false,
+     *   dateJoined: "2022-11-15T08:58:17Z"
+     * }
+     * ```
+     * @param {String} oldPassword User old password.
+     * @param {String} newPassword User new password.
+     * @returns Object
+     */
+    changePassword(token, oldPassword, newPassword) {
+        const path = `${this.path}/me/`;
+        const header = {token};
+
+        return this.put(path, header, {oldPassword, newPassword});
     }
 }
 
