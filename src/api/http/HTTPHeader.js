@@ -7,7 +7,10 @@ import * as base64 from 'base-64';
  */
 export const HTTPHeaderKey = {
     Authorization: 'Authorization',
-    ContentType: 'Content-Type'
+    ContentType: 'Content-Type',
+    Headers: 'headers',
+    Method: 'method',
+    Body: 'body',
 }
 
 /**

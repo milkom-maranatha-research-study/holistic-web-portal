@@ -14,6 +14,7 @@ export class HTTPRequest {
         this.post = this.post.bind(this);
         this.put = this.put.bind(this);
         this.delete = this.delete.bind(this);
+
         this._headerBuilder = this._headerBuilder.bind(this);
         this._queryBuilder = this._queryBuilder.bind(this);
         this._convertResponseToCamelCase = this._convertResponseToCamelCase.bind(this);
@@ -40,7 +41,7 @@ export class HTTPRequest {
      * @returns Promise
      */
     get(path, header={}, query={}) {
-        path = `${Server.BaseURL}/${path}/${this._queryBuilder(query)}`;
+        path = `${Server.BaseURL}/${path}` + this._queryBuilder(query);
 
         const reqHeader = this._headerBuilder({
             ...header,
@@ -78,13 +79,15 @@ export class HTTPRequest {
      * @returns Promise
      */
     post(path, header={}, body) {
-        path = `${Server.BaseURL}/${path}/}`;
+        path = `${Server.BaseURL}/${path}`;
 
         const reqHeader = this._headerBuilder({
             ...header,
             method: HTTPMethod.Post,
             body: JSON.stringify(this._convertBodyToSnakeCase(body))
         });
+
+        console.log(reqHeader);
 
         return fetch(path, reqHeader)
             .catch(error => {
@@ -117,7 +120,7 @@ export class HTTPRequest {
      * @returns Promise
      */
     put(path, header={}, body) {
-        path = `${Server.BaseURL}/${path}/}`;
+        path = `${Server.BaseURL}/${path}`;
 
         const reqHeader = this._headerBuilder({
             ...header,
@@ -149,7 +152,7 @@ export class HTTPRequest {
      * @returns Promise
      */
     delete(path, header={}) {
-        path = `${Server.BaseURL}/${path}/}`;
+        path = `${Server.BaseURL}/${path}`;
 
         const reqHeader = this._headerBuilder({
             ...header,
@@ -181,13 +184,17 @@ export class HTTPRequest {
      */
     _headerBuilder(header={}) {
         return {
-            [HTTPHeaderKey.ContentType]: header.contentType ? header.contentType : HTTPContentType.ApplicationJson,
-            [HTTPHeaderKey.Authorization]: header.basicAuth
-                ? HTTPHeader.getBasicAuthBase64String(header.basicAuth.username, header.basicAuth.password)
-                : header.token
-                ? HTTPHeader.getAuthorizationTokenString(header.token)
-                : undefined,
-            ...header.customHeaders,
+            [HTTPHeaderKey.Headers]: {
+                [HTTPHeaderKey.ContentType]: header.contentType ? header.contentType : HTTPContentType.ApplicationJson,
+                [HTTPHeaderKey.Authorization]: header.basicAuth
+                    ? HTTPHeader.getBasicAuthBase64String(header.basicAuth.username, header.basicAuth.password)
+                    : header.token
+                    ? HTTPHeader.getAuthorizationTokenString(header.token)
+                    : undefined,
+                ...header.customHeaders
+            },
+            [HTTPHeaderKey.Method]: header.method,
+            [HTTPHeaderKey.Body]: header.body
         };
     }
 
