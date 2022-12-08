@@ -9,6 +9,7 @@ import "assets/styles/tailwind.css";
 
 import Admin from "layouts/Admin.js";
 import Auth from "layouts/Auth.js";
+import PlaygroundAPI from "layouts/PlaygroundAPI.js"
 
 // views without layouts
 
@@ -26,6 +27,7 @@ ReactDOM.render(
       <Route path="/landing" exact component={Landing} />
       <Route path="/profile" exact component={Profile} />
       <Route path="/" exact component={Auth} />
+      <Route path="/playground" exact component={PlaygroundAPI} />
       {/* add redirect for first page */}
       <Redirect from="*" to="/" />
     </Switch>
