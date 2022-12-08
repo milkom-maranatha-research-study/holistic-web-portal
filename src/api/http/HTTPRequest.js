@@ -88,8 +88,6 @@ export class HTTPRequest {
             body: JSON.stringify(this._convertBodyToSnakeCase(body))
         });
 
-        console.log(reqHeader);
-
         return fetch(path, reqHeader)
             .catch(error => {
                 throw new NetworkRequestFailedError({error});
@@ -261,6 +259,12 @@ export class HTTPRequest {
         }, {});
     }
 
+    /**
+     * A function to check if the given `obj` is array or not.
+     * 
+     * @param {Object} obj Object
+     * @returns Boolean
+     */
     _isArray(obj) {
         return Object.prototype.toString.call(obj) === '[object Array]';
     }
