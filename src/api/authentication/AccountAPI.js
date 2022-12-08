@@ -110,7 +110,11 @@ export class AccountAPI extends HTTPRequest {
         const path = this.path + 'me/';
         const header = {token};
 
-        return this.put(path, header, user);
+        // Preventive action from accidentally sending `oldPassword` / `newPassword`
+        // to the Backend for updating User's password.
+        const {email, firstName, lastName} = user
+
+        return this.put(path, header, {email, firstName, lastName});
     }
 
     /**

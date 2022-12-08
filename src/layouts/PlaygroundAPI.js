@@ -27,7 +27,7 @@ export default function PlaygroundAPI() {
   }
 
   function logout() {
-    authApi.logout()
+    authApi.logout(token)
        .then(response => {
           console.log(response);
 
