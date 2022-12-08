@@ -19,6 +19,7 @@ export class HTTPRequest {
         this._queryBuilder = this._queryBuilder.bind(this);
         this._convertResponseToCamelCase = this._convertResponseToCamelCase.bind(this);
         this._convertBodyToSnakeCase = this._convertBodyToSnakeCase.bind(this);
+        this._isArray = this._isArray.bind(this);
     }
 
     /**
@@ -234,14 +235,14 @@ export class HTTPRequest {
      */
     _convertResponseToCamelCase(obj) {
         if (!obj) return obj;
-        if (Array.isArray(obj)) return obj.map(item => this._convertResponseToCamelCase(item));
         if (typeof obj !== 'object' || obj === null) return obj;
+        if (this._isArray(obj)) return obj.map(item => this._convertResponseToCamelCase(item));
 
         return Object.keys(obj).reduce((accum, key) => {
             return Object.assign(accum, {
-                [kase(key, 'camel')]: this._convertResponseToCamelCase(obj[key]),
+                [kase(key, 'camel')]: this._convertResponseToCamelCase(obj[key])
             });
-        });
+        }, {});
     }
 
     /**
@@ -252,11 +253,15 @@ export class HTTPRequest {
      */
     _convertBodyToSnakeCase(obj) {
         if (!obj) return obj;
-        if (Array.isArray(obj)) return obj.map(item => this._convertBodyToSnakeCase(item));
         if (typeof obj !== 'object' || obj === null) return obj;
+        if (this._isArray(obj)) return obj.map(item => this._convertBodyToSnakeCase(item));
 
         return Object.keys(obj).reduce((accum, key) => {
             return Object.assign(accum, { [kase(key, 'snake')]: this._convertBodyToSnakeCase(obj[key]) });
-        });
+        }, {});
+    }
+
+    _isArray(obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
     }
 }
