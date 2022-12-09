@@ -19,7 +19,7 @@ export class HTTPResponse {
      * @return {Promise} Promise
      */
     static handleResponse(response) {
-        return new Promise<any>((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             const statusCode = response.status;
 
             // Client's requests succeed.

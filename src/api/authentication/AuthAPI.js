@@ -1,6 +1,6 @@
 import { HTTPRequest } from "api/http";
 
-class AuthAPI extends HTTPRequest {
+export class AuthAPI extends HTTPRequest {
 
     constructor () {
         super();
@@ -14,7 +14,7 @@ class AuthAPI extends HTTPRequest {
 
     static getInstance() {
         if (!this.instance) {
-            this.instance = AuthAPI.getInstance();
+            this.instance = new AuthAPI();
         }
         return this.instance;
     }
@@ -43,7 +43,7 @@ class AuthAPI extends HTTPRequest {
      * @returns Object
      */
     login(username, password) {
-        const path = `${this.path}/login/`;
+        const path = this.path + 'login/';
         const header = {basicAuth: {username, password}};
 
         return this.post(path, header);
@@ -55,7 +55,7 @@ class AuthAPI extends HTTPRequest {
      * @returns Object
      */
     logout(token) {
-        const path = `${this.path}/logout/`;
+        const path = this.path + 'logout/';
         const header = {token};
 
         return this.post(path, header);
@@ -67,13 +67,9 @@ class AuthAPI extends HTTPRequest {
      * @returns Object
      */
     logoutAll(token) {
-        const path = `${this.path}/logout/`;
+        const path = this.path + 'logout-all/';
         const header = {token};
 
         return this.post(path, header);
     }
 }
-
-const authApi = AuthAPI.getInstance();
-
-export default authApi;

@@ -1,6 +1,6 @@
 import { HTTPRequest } from "api/http";
 
-class AccountAPI extends HTTPRequest {
+export class AccountAPI extends HTTPRequest {
 
     constructor () {
         super();
@@ -14,7 +14,7 @@ class AccountAPI extends HTTPRequest {
 
     static getInstance() {
         if (!this.instance) {
-            this.instance = AccountAPI.getInstance();
+            this.instance = new AccountAPI();
         }
         return this.instance;
     }
@@ -38,7 +38,7 @@ class AccountAPI extends HTTPRequest {
      * @returns Object
      */
     getAccount(token) {
-        const path = `${this.path}/me/`;
+        const path = this.path + 'me/';
         const header = {token};
 
         return this.get(path, header);
@@ -107,10 +107,14 @@ class AccountAPI extends HTTPRequest {
      * @returns Object
      */
     updateAccount(token, user) {
-        const path = `${this.path}/me/`;
+        const path = this.path + 'me/';
         const header = {token};
 
-        return this.put(path, header, user);
+        // Preventive action from accidentally sending `oldPassword` / `newPassword`
+        // to the Backend for updating User's password.
+        const {email, firstName, lastName} = user
+
+        return this.put(path, header, {email, firstName, lastName});
     }
 
     /**
@@ -133,13 +137,9 @@ class AccountAPI extends HTTPRequest {
      * @returns Object
      */
     changePassword(token, oldPassword, newPassword) {
-        const path = `${this.path}/me/`;
+        const path = this.path + 'me/';
         const header = {token};
 
         return this.put(path, header, {oldPassword, newPassword});
     }
 }
-
-const accountApi = AccountAPI.getInstance();
-
-export default accountApi;

@@ -14,10 +14,12 @@ export class HTTPRequest {
         this.post = this.post.bind(this);
         this.put = this.put.bind(this);
         this.delete = this.delete.bind(this);
+
         this._headerBuilder = this._headerBuilder.bind(this);
         this._queryBuilder = this._queryBuilder.bind(this);
         this._convertResponseToCamelCase = this._convertResponseToCamelCase.bind(this);
         this._convertBodyToSnakeCase = this._convertBodyToSnakeCase.bind(this);
+        this._isArray = this._isArray.bind(this);
     }
 
     /**
@@ -40,7 +42,7 @@ export class HTTPRequest {
      * @returns Promise
      */
     get(path, header={}, query={}) {
-        path = `${Server.BaseURL}/${path}/${this._queryBuilder(query)}`;
+        path = `${Server.BaseURL}/${path}` + this._queryBuilder(query);
 
         const reqHeader = this._headerBuilder({
             ...header,
@@ -78,7 +80,7 @@ export class HTTPRequest {
      * @returns Promise
      */
     post(path, header={}, body) {
-        path = `${Server.BaseURL}/${path}/}`;
+        path = `${Server.BaseURL}/${path}`;
 
         const reqHeader = this._headerBuilder({
             ...header,
@@ -117,7 +119,7 @@ export class HTTPRequest {
      * @returns Promise
      */
     put(path, header={}, body) {
-        path = `${Server.BaseURL}/${path}/}`;
+        path = `${Server.BaseURL}/${path}`;
 
         const reqHeader = this._headerBuilder({
             ...header,
@@ -149,7 +151,7 @@ export class HTTPRequest {
      * @returns Promise
      */
     delete(path, header={}) {
-        path = `${Server.BaseURL}/${path}/}`;
+        path = `${Server.BaseURL}/${path}`;
 
         const reqHeader = this._headerBuilder({
             ...header,
@@ -181,13 +183,17 @@ export class HTTPRequest {
      */
     _headerBuilder(header={}) {
         return {
-            [HTTPHeaderKey.ContentType]: header.contentType ? header.contentType : HTTPContentType.ApplicationJson,
-            [HTTPHeaderKey.Authorization]: header.basicAuth
-                ? HTTPHeader.getBasicAuthBase64String(header.basicAuth.username, header.basicAuth.password)
-                : header.token
-                ? HTTPHeader.getAuthorizationTokenString(header.token)
-                : undefined,
-            ...header.customHeaders,
+            [HTTPHeaderKey.Headers]: {
+                [HTTPHeaderKey.ContentType]: header.contentType ? header.contentType : HTTPContentType.ApplicationJson,
+                [HTTPHeaderKey.Authorization]: header.basicAuth
+                    ? HTTPHeader.getBasicAuthBase64String(header.basicAuth.username, header.basicAuth.password)
+                    : header.token
+                    ? HTTPHeader.getAuthorizationTokenString(header.token)
+                    : undefined,
+                ...header.customHeaders
+            },
+            [HTTPHeaderKey.Method]: header.method,
+            [HTTPHeaderKey.Body]: header.body
         };
     }
 
@@ -227,14 +233,14 @@ export class HTTPRequest {
      */
     _convertResponseToCamelCase(obj) {
         if (!obj) return obj;
-        if (Array.isArray(obj)) return obj.map(item => this._convertResponseToCamelCase(item));
         if (typeof obj !== 'object' || obj === null) return obj;
+        if (this._isArray(obj)) return obj.map(item => this._convertResponseToCamelCase(item));
 
         return Object.keys(obj).reduce((accum, key) => {
             return Object.assign(accum, {
-                [kase(key, 'camel')]: this._convertResponseToCamelCase(obj[key]),
+                [kase(key, 'camel')]: this._convertResponseToCamelCase(obj[key])
             });
-        });
+        }, {});
     }
 
     /**
@@ -245,11 +251,21 @@ export class HTTPRequest {
      */
     _convertBodyToSnakeCase(obj) {
         if (!obj) return obj;
-        if (Array.isArray(obj)) return obj.map(item => this._convertBodyToSnakeCase(item));
         if (typeof obj !== 'object' || obj === null) return obj;
+        if (this._isArray(obj)) return obj.map(item => this._convertBodyToSnakeCase(item));
 
         return Object.keys(obj).reduce((accum, key) => {
             return Object.assign(accum, { [kase(key, 'snake')]: this._convertBodyToSnakeCase(obj[key]) });
-        });
+        }, {});
+    }
+
+    /**
+     * A function to check if the given `obj` is array or not.
+     * 
+     * @param {Object} obj Object
+     * @returns Boolean
+     */
+    _isArray(obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
     }
 }
