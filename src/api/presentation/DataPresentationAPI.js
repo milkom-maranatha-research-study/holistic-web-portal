@@ -23,19 +23,19 @@ export class DataPresentationAPI extends HTTPRequest {
      * ```
      * [
      *  {
-     *      "period_type": "yearly",
+     *      "periodType": "yearly",
      *      "organization": null,
-     *      "start_date": "2018-01-01",
-     *      "end_date": "2018-12-31",
-     *      "is_active": true,
+     *      "startDate": "2018-01-01",
+     *      "endDate": "2018-12-31",
+     *      "isActive": true,
      *      "value": 18
      *  },
      *  {
-     *      "period_type": "yearly",
+     *      "periodType": "yearly",
      *      "organization": null,
-     *      "start_date": "2019-01-01",
-     *      "end_date": "2019-12-31",
-     *      "is_active": true,
+     *      "startDate": "2019-01-01",
+     *      "endDate": "2019-12-31",
+     *      "isActive": true,
      *      "value": 67
      *  }
      * ]
@@ -76,20 +76,20 @@ export class DataPresentationAPI extends HTTPRequest {
      * ```
      * [
      *  {
-     *      "period_type": "yearly",
+     *      "periodType": "yearly",
      *      "organization": null,
-     *      "start_date": "2018-01-01",
-     *      "end_date": "2018-12-31",
+     *      "startDate": "2018-01-01",
+     *      "endDate": "2018-12-31",
      *      "type": "retention_rate",
-     *      "rate_value": 0.0
+     *      "rateValue": 0.0
      *  },
      *  {
-     *      "period_type": "yearly",
+     *      "periodType": "yearly",
      *      "organization": null,
-     *      "start_date": "2019-01-01",
-     *      "end_date": "2019-12-31",
+     *      "startDate": "2019-01-01",
+     *      "endDate": "2019-12-31",
      *      "type": "retention_rate",
-     *      "rate_value": 0.98
+     *      "rateValue": 0.98
      *  }
      * ]
      * ```
