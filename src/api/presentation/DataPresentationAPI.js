@@ -46,12 +46,26 @@ export class DataPresentationAPI extends HTTPRequest {
     getTotalTherapists(token, query={}) {
         const path = 'total-therapists/';
         const header = {token};
-        const {periodAfter, periodBefore, organization, periodType, type} = query
+        const {
+            periodAfter,
+            periodBefore,
+            organization,
+            nicedayOnly,
+            periodType,
+            isActive
+        } = query
 
         return this.get(
             path,
             header,
-            {periodAfter, periodBefore, organization, periodType, type}
+            {
+                periodAfter,
+                periodBefore,
+                organization,
+                nicedayOnly,
+                periodType,
+                isActive
+            }
         );
     }
 
@@ -85,12 +99,26 @@ export class DataPresentationAPI extends HTTPRequest {
     getTherapistRates(token, query={}) {
         const path = 'rates/';
         const header = {token};
-        const {periodAfter, periodBefore, organization, periodType, type} = query
+        const {
+            periodAfter,
+            periodBefore,
+            organization,
+            nicedayOnly,
+            periodType,
+            type
+        } = query
 
         return this.get(
             path,
             header,
-            {periodAfter, periodBefore, organization, periodType, type}
+            {
+                periodAfter,
+                periodBefore,
+                organization,
+                nicedayOnly,
+                periodType,
+                type
+            }
         );
     }
 }
