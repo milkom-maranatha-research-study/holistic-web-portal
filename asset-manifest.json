@@ -1,0 +1,42 @@
+{
+  "files": {
+    "main.css": "/holistic-web-portal/static/css/main.7dd6d6ba.chunk.css",
+    "main.js": "/holistic-web-portal/static/js/main.dc97e59b.chunk.js",
+    "main.js.map": "/holistic-web-portal/static/js/main.dc97e59b.chunk.js.map",
+    "runtime-main.js": "/holistic-web-portal/static/js/runtime-main.aae8531c.js",
+    "runtime-main.js.map": "/holistic-web-portal/static/js/runtime-main.aae8531c.js.map",
+    "static/css/2.90e789ee.chunk.css": "/holistic-web-portal/static/css/2.90e789ee.chunk.css",
+    "static/js/2.531ecb35.chunk.js": "/holistic-web-portal/static/js/2.531ecb35.chunk.js",
+    "static/js/2.531ecb35.chunk.js.map": "/holistic-web-portal/static/js/2.531ecb35.chunk.js.map",
+    "index.html": "/holistic-web-portal/index.html",
+    "static/css/2.90e789ee.chunk.css.map": "/holistic-web-portal/static/css/2.90e789ee.chunk.css.map",
+    "static/css/main.7dd6d6ba.chunk.css.map": "/holistic-web-portal/static/css/main.7dd6d6ba.chunk.css.map",
+    "static/js/2.531ecb35.chunk.js.LICENSE.txt": "/holistic-web-portal/static/js/2.531ecb35.chunk.js.LICENSE.txt",
+    "static/media/angular.jpg": "/holistic-web-portal/static/media/angular.b5045666.jpg",
+    "static/media/bootstrap.jpg": "/holistic-web-portal/static/media/bootstrap.bd712487.jpg",
+    "static/media/component-info-2.png": "/holistic-web-portal/static/media/component-info-2.5212a3a6.png",
+    "static/media/component-info-card.png": "/holistic-web-portal/static/media/component-info-card.d19a4464.png",
+    "static/media/component-menu.png": "/holistic-web-portal/static/media/component-menu.418bd949.png",
+    "static/media/component-profile-card.png": "/holistic-web-portal/static/media/component-profile-card.52a3ee76.png",
+    "static/media/documentation.png": "/holistic-web-portal/static/media/documentation.014ebef5.png",
+    "static/media/all.min.css": "/holistic-web-portal/static/media/fa-solid-900.efbd5d20.eot",
+    "static/media/landing.jpg": "/holistic-web-portal/static/media/landing.8150f1b0.jpg",
+    "static/media/login.jpg": "/holistic-web-portal/static/media/login.9c1ecd37.jpg",
+    "static/media/pattern_react.png": "/holistic-web-portal/static/media/pattern_react.01996482.png",
+    "static/media/profile.jpg": "/holistic-web-portal/static/media/profile.c62f8a5b.jpg",
+    "static/media/react.jpg": "/holistic-web-portal/static/media/react.0e8c9066.jpg",
+    "static/media/sketch.jpg": "/holistic-web-portal/static/media/sketch.a6af780a.jpg",
+    "static/media/team-1-800x800.jpg": "/holistic-web-portal/static/media/team-1-800x800.fa5a7ac2.jpg",
+    "static/media/team-2-800x800.jpg": "/holistic-web-portal/static/media/team-2-800x800.3e08ef14.jpg",
+    "static/media/team-3-800x800.jpg": "/holistic-web-portal/static/media/team-3-800x800.19201574.jpg",
+    "static/media/team-4-470x470.png": "/holistic-web-portal/static/media/team-4-470x470.4ef82ef4.png",
+    "static/media/vue.jpg": "/holistic-web-portal/static/media/vue.43bd93a8.jpg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.aae8531c.js",
+    "static/css/2.90e789ee.chunk.css",
+    "static/js/2.531ecb35.chunk.js",
+    "static/css/main.7dd6d6ba.chunk.css",
+    "static/js/main.dc97e59b.chunk.js"
+  ]
+}
