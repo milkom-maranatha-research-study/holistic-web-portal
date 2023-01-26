@@ -1,21 +1,23 @@
-import React from "react";
+import React,{useState} from "react";
 import Chart from "chart.js";
+import dataTotal from '../../data/be_total_therapists.json'
+import './drop.css'
 
 
 export default function CardBarChart1() {
+  const [isOpen, setOpen] = useState(false);
+  
+  const toggleDropdown = () => setOpen(!isOpen);
   React.useEffect(() => {
+    const labels = dataTotal.map(d => {
+      const start = new Date(d.start_date);
+      const end = new Date(d.end_date);
+      return `${start.getMonth() + 1}-${start.getFullYear()} - ${end.getMonth() + 1}-${end.getFullYear()}`;
+    });
     let config = {
       type: "bar",
       data: {
-        labels: [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-        ],
+        labels: labels,
         datasets: [
           {
             label: new Date().getFullYear(),
@@ -101,10 +103,29 @@ export default function CardBarChart1() {
   }, []);
   return (
     <>
-      <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded">
+    {/* Dropdown Tahun */}
+    <div className="py-5">
+    <div className='dropdown'>
+      <div className='dropdown-header' onClick={toggleDropdown}>
+        Select Year
+        <i className={`fa fa-chevron-right icon ${isOpen && "open"}`}></i>
+      </div>
+      <div className={`dropdown-body ${isOpen && 'open'}`}>
+          <div className="dropdown-item">
+            2019
+          </div>
+          <div className="dropdown-item">
+            2018
+          </div>
+      </div>
+    </div>
+    </div>
+    {/*  */}
+
+      <div className="flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded">
         <div className="rounded-t mb-0 px-4 py-3 bg-transparent">
           <div className="flex flex-wrap items-center">
-            <div className="relative w-full max-w-full flex-grow flex-1">
+            <div className="w-full max-w-full flex-grow flex-1">
               <h6 className="uppercase text-blueGray-400 mb-1 text-xs font-semibold">
                 Bar Chart
               </h6>
@@ -121,6 +142,7 @@ export default function CardBarChart1() {
           </div>
         </div>
       </div>
+   
     </>
   );
 }
