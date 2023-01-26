@@ -1,6 +1,5 @@
 import React, {useState} from "react";
 import dataTotal from '../../data/be_total_therapists.json'
-import Moment from 'react-moment';
 import moment from 'moment';
 
 // components
@@ -8,20 +7,14 @@ import moment from 'moment';
 import CardStats from "components/Cards/CardStats.js";
 
 export default function HeaderStats() {
-
   
+  let appDataTotalActive = dataTotal
+    .filter((item) => !item.organization_id && item.type === "active" && item.period_type === "alltime")
+    .map((item) => ({...item, end_date: moment(item.end_date, "YYYY/MM/DD").toDate()}))
+    .sort((item1, item2) => item2.end_date - item1.end_date)
 
-  // dataTotal.forEach(item => {
-  //   if (item.period_type === "alltime") {
-  //    totalTerapis += item.value;
-  //   }
-  // });
-  // let appDataTotalActive = dataTotal.filter((item) => item.period === "alltime")
-  // .map((item) => ({...item, end_date: moment(item.end_date, "DD/MM/YYYY").toDate()}))
-  // .sort((item1, item2) => item2.end_date - item1.end_date)
-  
-  // console.log(appDataTotalActive[0].end_date.toString())
-  console.log(dataTotal[0])
+  console.log(appDataTotalActive[0])
+  console.log(dataTotal[0].organization_id)
   return (
     <>
       {/* Header */}
