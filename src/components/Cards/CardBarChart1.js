@@ -30,7 +30,7 @@ export default function CardBarChart1() {
   const totalActiveTherMap = {};
   years.forEach((year) => {
     totalActiveTherMap[year] = appTotalActiveThers
-      .filter((item) => item.start_date.year() >= year && item.end_date.year() <= year + 1)
+      .filter((item) => item.start_date.year() >= year && item.end_date.year() <= year)
       .sort((item1, item2) => item1.end_date.toDate() - item2.end_date.toDate())  // sort ascending
       .map((item) => item.value);
   })
@@ -48,7 +48,7 @@ export default function CardBarChart1() {
   const totalInactiveTherMap = {};
   years.forEach((year) => {
     totalInactiveTherMap[year] = appTotalInactiveThers
-      .filter((item) => item.start_date.year() >= year && item.end_date.year() <= year + 1)
+      .filter((item) => item.start_date.year() >= year && item.end_date.year() <= year)
       .sort((item1, item2) => item1.end_date.toDate() - item2.end_date.toDate())  // sort ascending
       .map((item) => item.value);
   })
