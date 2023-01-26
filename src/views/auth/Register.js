@@ -1,6 +1,29 @@
-import React from "react";
+import React, {useState} from "react";
+import { AccountAPI } from "api/authentication/AccountAPI";
+import { AuthAPI } from "api/authentication/AuthAPI";
 
+const authApi = AuthAPI.getInstance();
+const accountApi = AccountAPI.getInstance();
 export default function Register() {
+  const [user, setUser] = useState(null);
+  function register() {
+    const dummy = `dummy-${new Date().getMilliseconds()}`
+    const user = {
+      username: `user-${dummy}`,
+      email: `${dummy}@mail.com`,
+      firstName: `${dummy}-firstname`,
+      lastName: `${dummy}-lastname`,
+      password: 'Test@12345'
+    }
+
+    accountApi.createAccount(user)
+       .then(response => {
+          console.log(response);
+
+          setUser({...response});
+       })
+       .catch(err => console.error(err));
+  }
   return (
     <>
       <div className="container mx-auto px-4 h-full">

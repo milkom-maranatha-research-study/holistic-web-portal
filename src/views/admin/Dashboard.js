@@ -1,30 +1,63 @@
-import React from "react";
+import React, {useEffect,useState} from "react";
 
-// components
+import CardBarChart1 from "components/Cards/CardBarChart1";
+import { AccountAPI } from "api/authentication/AccountAPI";
+import { AuthAPI } from "api/authentication/AuthAPI";
+import { DataPresentationAPI } from "api/presentation/DataPresentationAPI";
+import { data } from "autoprefixer";
 
-import CardLineChart from "components/Cards/CardLineChart.js";
-import CardBarChart from "components/Cards/CardBarChart.js";
-import CardPageVisits from "components/Cards/CardPageVisits.js";
-import CardSocialTraffic from "components/Cards/CardSocialTraffic.js";
 
-export default function Dashboard() {
+// const authApi = AuthAPI.getInstance();
+
+export default function Dashboard(props) {
+  // const [token, setToken] = useState(localStorage.getItem('token'));
+  // const [therapistsData, setTherapistsData] = useState([]);
+  // // const token = useSelector(state => state.auth.token); // assuming you have token in your auth state
+  
+  // useEffect(() => {
+  //   const api = DataPresentationAPI.getInstance();
+  //   api.getTotalTherapists(token, {
+  //       periodAfter: "2019-01-01",
+  //       periodBefore: "2019-12-31",
+  //       isActive: true
+  //   })
+  //     .then(data => {setTherapistsData(data);
+  //     console.log('token 2',token);})
+  //     .catch(error => console.log(error))
+  // }, [token]);
+
+  // function logout() {
+  //   if (!token) {
+  //     alert("Please login first!");
+  //     return;
+  //   }
+  //   authApi.logout(token)
+  //      .then(response => {
+  //         console.log(response);
+  //         console.log(token)
+  //         setToken(null);
+  //         props.history.push('/');
+  //      })
+  //      .catch(err => console.error(err));
+  // }
   return (
     <>
       <div className="flex flex-wrap">
-        <div className="w-full xl:w-8/12 mb-12 xl:mb-0 px-4">
-          <CardLineChart />
-        </div>
-        <div className="w-full xl:w-4/12 px-4">
-          <CardBarChart />
+        <div className="w-full xl:w-1/2 mb-12 xl:mb-0 px-4">
+        <CardBarChart1/>
         </div>
       </div>
       <div className="flex flex-wrap mt-4">
-        <div className="w-full xl:w-8/12 mb-12 xl:mb-0 px-4">
-          <CardPageVisits />
-        </div>
-        <div className="w-full xl:w-4/12 px-4">
-          <CardSocialTraffic />
-        </div>
+        <div className="text-center mt-6">
+              <button
+                className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                type="button"
+                // onClick={() => logout()}
+              >
+                Sign Out
+              </button>
+
+            </div>
       </div>
     </>
   );

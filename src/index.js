@@ -15,7 +15,7 @@ import PlaygroundAPI from "layouts/PlaygroundAPI.js"
 
 import Landing from "views/Landing.js";
 import Profile from "views/Profile.js";
-import Index from "views/Index.js";
+
 
 ReactDOM.render(
   <BrowserRouter>
