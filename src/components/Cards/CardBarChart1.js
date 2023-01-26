@@ -3,36 +3,87 @@ import Chart from "chart.js";
 import dataTotal from '../../data/be_total_therapists.json'
 import './drop.css'
 
+import moment from 'moment';
+
 
 export default function CardBarChart1() {
+  // Data preparations
+  // Extracts unique years
+  const appDataTotal = dataTotal.filter((item) => !item.organization_id);
+
+  const yearSet = {};
+  appDataTotal.map((item) => moment(item.start_date, "YYYY/MM/DD").year())
+    .forEach(item => yearSet[item] = item);
+
+  const years = Object.entries(yearSet).map(item => item[0])
+  console.log(years);
+
+  // Active Ther
+  const appTotalActiveThers = appDataTotal
+    .filter((item) => item.type === "active" && item.period_type === "monthly")
+    .map((item) => ({
+      ...item,
+      start_date: moment(item.start_date, "YYYY/MM/DD"),
+      end_date: moment(item.end_date, "YYYY/MM/DD")
+    }));
+
+  const totalActiveTherMap = {};
+  years.forEach((year) => {
+    totalActiveTherMap[year] = appTotalActiveThers
+      .filter((item) => item.start_date.year() >= year && item.end_date.year() <= year + 1)
+      .sort((item1, item2) => item1.end_date.toDate() - item2.end_date.toDate())  // sort ascending
+      .map((item) => item.value);
+  })
+  console.log(totalActiveTherMap);
+
+  // Inactive Ther
+  const appTotalInactiveThers = appDataTotal
+  .filter((item) => item.type === "inactive" && item.period_type === "monthly")
+  .map((item) => ({
+    ...item,
+    start_date: moment(item.start_date, "YYYY/MM/DD"),
+    end_date: moment(item.end_date, "YYYY/MM/DD")
+  }));
+
+  const totalInactiveTherMap = {};
+  years.forEach((year) => {
+    totalInactiveTherMap[year] = appTotalInactiveThers
+      .filter((item) => item.start_date.year() >= year && item.end_date.year() <= year + 1)
+      .sort((item1, item2) => item1.end_date.toDate() - item2.end_date.toDate())  // sort ascending
+      .map((item) => item.value);
+  })
+
   const [isOpen, setOpen] = useState(false);
   
   const toggleDropdown = () => setOpen(!isOpen);
   React.useEffect(() => {
-    const labels = dataTotal.map(d => {
-      const start = new Date(d.start_date);
-      const end = new Date(d.end_date);
-      return `${start.getMonth() + 1}-${start.getFullYear()} - ${end.getMonth() + 1}-${end.getFullYear()}`;
-    });
     let config = {
       type: "bar",
       data: {
-        labels: labels,
+        labels: [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+        ],
         datasets: [
           {
-            label: new Date().getFullYear(),
+            label: 'Active Therapist',
             backgroundColor: "#ed64a6",
             borderColor: "#ed64a6",
-            data: [30, 78, 56, 34, 100, 45, 13],
+            data: totalActiveTherMap[years[4]],  // TODO: Pass selected YEAR HERE!!!
             fill: false,
             barThickness: 8,
           },
           {
-            label: new Date().getFullYear() - 1,
+            label: 'Inactive Therapist',
             fill: false,
             backgroundColor: "#4c51bf",
             borderColor: "#4c51bf",
-            data: [27, 68, 86, 74, 10, 4, 87],
+            data: totalInactiveTherMap[years[4]],  // TODO: Pass selected YEAR HERE!!!
             barThickness: 8,
           },
         ],
@@ -101,26 +152,27 @@ export default function CardBarChart1() {
     let ctx = document.getElementById("bar-chart").getContext("2d");
     window.myBar = new Chart(ctx, config);
   }, []);
+
   return (
     <>
     {/* Dropdown Tahun */}
     <div className="py-5">
-    <div className='dropdown'>
-      <div className='dropdown-header' onClick={toggleDropdown}>
-        Select Year
-        <i className={`fa fa-chevron-right icon ${isOpen && "open"}`}></i>
-      </div>
-      <div className={`dropdown-body ${isOpen && 'open'}`}>
+      <div className='dropdown'>
+        <div className='dropdown-header' onClick={toggleDropdown}>
+          Select Year
+          <i className={`fa fa-chevron-right icon ${isOpen && "open"}`}></i>
+        </div>
+        <div className={`dropdown-body ${isOpen && 'open'}`}>
+          {/* TODO: RENDER `years` to the DROPDOWN???*/}
           <div className="dropdown-item">
-            2019
-          </div>
-          <div className="dropdown-item">
-            2018
-          </div>
+              2019
+            </div>
+            <div className="dropdown-item">
+              2018
+            </div>
+        </div>
       </div>
     </div>
-    </div>
-    {/*  */}
 
       <div className="flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded">
         <div className="rounded-t mb-0 px-4 py-3 bg-transparent">
