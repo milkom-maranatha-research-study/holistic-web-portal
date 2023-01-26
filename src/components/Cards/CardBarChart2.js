@@ -1,7 +1,61 @@
-import React from "react";
+import React, {useState}  from "react";
 import Chart from "chart.js";
 
+import dataRate from '../../data/be_therapists_rates.json';
+import './drop.css'
+
+import moment from 'moment';
+
 export default function CardBarChart2() {
+  // Data preparations
+  // Extracts unique years
+  const appDataRate = dataRate.filter((item) => !item.organization_id);
+
+  const yearSet = {};
+  appDataRate.map((item) => moment(item.start_date, "YYYY/MM/DD").year())
+    .forEach(item => yearSet[item] = item);
+
+  const years = Object.entries(yearSet).map(item => item[0])
+  console.log(years);
+
+  // Retention Rate
+  const appRetentionRates = appDataRate
+    .filter((item) => item.type === "retention_rate" && item.period_type === "monthly")
+    .map((item) => ({
+      ...item,
+      start_date: moment(item.start_date, "YYYY/MM/DD"),
+      end_date: moment(item.end_date, "YYYY/MM/DD")
+    }));
+
+  const retentionRateMap = {};
+  years.forEach((year) => {
+    retentionRateMap[year] = appRetentionRates
+      .filter((item) => item.start_date.year() >= year && item.end_date.year() <= year)
+      .sort((item1, item2) => item1.end_date.toDate() - item2.end_date.toDate())  // sort ascending
+      .map((item) => item.value);
+  })
+  console.log(retentionRateMap);
+
+  // Churn Rate
+  const appChurnRates = appDataRate
+  .filter((item) => item.type === "churn_rate" && item.period_type === "monthly")
+  .map((item) => ({
+    ...item,
+    start_date: moment(item.start_date, "YYYY/MM/DD"),
+    end_date: moment(item.end_date, "YYYY/MM/DD")
+  }));
+
+  const churnRateMap = {};
+  years.forEach((year) => {
+    churnRateMap[year] = appChurnRates
+      .filter((item) => item.start_date.year() >= year && item.end_date.year() <= year)
+      .sort((item1, item2) => item1.end_date.toDate() - item2.end_date.toDate())  // sort ascending
+      .map((item) => item.value);
+  })
+
+  const [isOpen, setOpen] = useState(false);
+  
+  const toggleDropdown = () => setOpen(!isOpen);
   React.useEffect(() => {
     let config = {
       type: "bar",
@@ -17,19 +71,19 @@ export default function CardBarChart2() {
         ],
         datasets: [
           {
-            label: new Date().getFullYear(),
+            label: 'Retention Rate',
             backgroundColor: "#ed64a6",
             borderColor: "#ed64a6",
-            data: [30, 78, 56, 34, 100, 45, 13],
+            data: retentionRateMap[years[4]],  // TODO: Pass selected YEAR HERE!!!
             fill: false,
             barThickness: 8,
           },
           {
-            label: new Date().getFullYear() - 1,
+            label: 'Churn Rate',
             fill: false,
             backgroundColor: "#4c51bf",
             borderColor: "#4c51bf",
-            data: [27, 68, 86, 74, 10, 4, 87],
+            data: churnRateMap[years[4]],  // TODO: Pass selected YEAR HERE!!!,
             barThickness: 8,
           },
         ],
@@ -100,6 +154,24 @@ export default function CardBarChart2() {
   }, []);
   return (
     <>
+      {/* Dropdown Tahun */}
+      <div className="py-5">
+        <div className='dropdown'>
+          <div className='dropdown-header' onClick={toggleDropdown}>
+            Select Year
+            <i className={`fa fa-chevron-right icon ${isOpen && "open"}`}></i>
+          </div>
+          <div className={`dropdown-body ${isOpen && 'open'}`}>
+            {/* TODO: RENDER `years` to the DROPDOWN???*/}
+            <div className="dropdown-item">
+                2019
+              </div>
+              <div className="dropdown-item">
+                2018
+              </div>
+          </div>
+        </div>
+      </div>
       <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded">
         <div className="rounded-t mb-0 px-4 py-3 bg-transparent">
           <div className="flex flex-wrap items-center">
