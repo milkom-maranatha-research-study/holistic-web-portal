@@ -58,6 +58,14 @@ export default function CardBarChart1() {
   const [isOpen, setOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState(years[years.length - 1]);
 
+  // View Actions
+  const toggleDropdown = () => setOpen(!isOpen);
+  const selectYear = (year) => {
+    setSelectedYear(year);
+    toggleDropdown();
+  }
+
+
   React.useEffect(() => {
     let config = {
       type: "bar",
@@ -154,12 +162,6 @@ export default function CardBarChart1() {
     let ctx = document.getElementById("bar-chart").getContext("2d");
     window.myBar = new Chart(ctx, config);
   }, [selectedYear]);
-
-  const toggleDropdown = () => setOpen(!isOpen);
-  const selectYear = (year) => {
-    setSelectedYear(year);
-    toggleDropdown();
-  }
 
   const yearItemViews = years.map((year) => {
     return (

@@ -53,9 +53,17 @@ export default function CardBarChart2() {
       .map((item) => item.value);
   })
 
+  // View States
   const [isOpen, setOpen] = useState(false);
-  
+  const [selectedYear, setSelectedYear] = useState(years[years.length - 1]);
+
+  // View Actions
   const toggleDropdown = () => setOpen(!isOpen);
+  const selectYear = (year) => {
+    setSelectedYear(year);
+    toggleDropdown();
+  }
+  
   React.useEffect(() => {
     let config = {
       type: "bar",
@@ -151,24 +159,27 @@ export default function CardBarChart2() {
     };
     let ctx = document.getElementById("bar-chart").getContext("2d");
     window.myBar = new Chart(ctx, config);
-  }, []);
+  }, [selectedYear]);
+
+  const yearItemViews = years.map((year) => {
+    return (
+      <div className="dropdown-item" onClick={() => selectYear(year)}>
+        {year}
+      </div>
+    )
+  })
+
   return (
     <>
       {/* Dropdown Tahun */}
       <div className="py-5">
         <div className='dropdown'>
           <div className='dropdown-header' onClick={toggleDropdown}>
-            Select Year
+            Selected Year: {selectedYear}
             <i className={`fa fa-chevron-right icon ${isOpen && "open"}`}></i>
           </div>
           <div className={`dropdown-body ${isOpen && 'open'}`}>
-            {/* TODO: RENDER `years` to the DROPDOWN???*/}
-            <div className="dropdown-item">
-                2019
-              </div>
-              <div className="dropdown-item">
-                2018
-              </div>
+            {yearItemViews}
           </div>
         </div>
       </div>
