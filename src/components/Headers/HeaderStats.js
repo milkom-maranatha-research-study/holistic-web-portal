@@ -8,13 +8,27 @@ import CardStats from "components/Cards/CardStats.js";
 
 export default function HeaderStats() {
   
-  let appDataTotalActive = dataTotal
+  const appDataTotalActive = dataTotal
     .filter((item) => !item.organization_id && item.type === "active" && item.period_type === "alltime")
-    .map((item) => ({...item, end_date: moment(item.end_date, "YYYY/MM/DD").toDate()}))
-    .sort((item1, item2) => item2.end_date - item1.end_date)
+    .map((item) => ({
+      ...item,
+      start_date: moment(item.end_date, "YYYY/MM/DD").toDate(),
+      end_date: moment(item.end_date, "YYYY/MM/DD").toDate()
+    }))
+    .sort((item1, item2) => item2.end_date - item1.end_date);
 
-  console.log(appDataTotalActive[0])
-  console.log(dataTotal[0].organization_id)
+  const appDataTotalInactive = dataTotal
+    .filter((item) => !item.organization_id && item.type === "inactive" && item.period_type === "alltime")
+    .map((item) => ({
+      ...item,
+      start_date: moment(item.end_date, "YYYY/MM/DD").toDate(),
+      end_date: moment(item.end_date, "YYYY/MM/DD").toDate()
+    }))
+    .sort((item1, item2) => item2.end_date - item1.end_date);
+
+  const recentTotalActiveTher = appDataTotalActive[0].value;
+  const recentTotalInactiveTher = appDataTotalInactive[0].value;
+
   return (
     <>
       {/* Header */}
@@ -26,7 +40,7 @@ export default function HeaderStats() {
               <div className="w-1/4 px-4">
                 <CardStats
                   statSubtitle="TOTAL ACTIVE TERAPHISTS"
-                  statTitle="{appDataTotalActive}"
+                  statTitle={recentTotalActiveTher}
                   statIconName="far fa-chart-bar"
                   statIconColor="bg-red-500"
                 />
