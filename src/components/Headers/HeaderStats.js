@@ -12,19 +12,19 @@ export default function HeaderStats() {
     .filter((item) => !item.organization_id && item.type === "active" && item.period_type === "alltime")
     .map((item) => ({
       ...item,
-      start_date: moment(item.end_date, "YYYY/MM/DD").toDate(),
+      start_date: moment(item.start_date, "YYYY/MM/DD").toDate(),
       end_date: moment(item.end_date, "YYYY/MM/DD").toDate()
     }))
-    .sort((item1, item2) => item2.end_date - item1.end_date);
+    .sort((item1, item2) => item2.end_date - item1.end_date);  // sort descending
 
   const appDataTotalInactive = dataTotal
     .filter((item) => !item.organization_id && item.type === "inactive" && item.period_type === "alltime")
     .map((item) => ({
       ...item,
-      start_date: moment(item.end_date, "YYYY/MM/DD").toDate(),
+      start_date: moment(item.start_date, "YYYY/MM/DD").toDate(),
       end_date: moment(item.end_date, "YYYY/MM/DD").toDate()
     }))
-    .sort((item1, item2) => item2.end_date - item1.end_date);
+    .sort((item1, item2) => item2.end_date - item1.end_date);  // sort descending
 
   const recentTotalActiveTher = appDataTotalActive[0].value;
   const recentTotalInactiveTher = appDataTotalInactive[0].value;
