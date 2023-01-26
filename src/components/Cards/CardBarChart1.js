@@ -1,5 +1,6 @@
-import React,{useState} from "react";
+import React, {useState} from "react";
 import Chart from "chart.js";
+
 import dataTotal from '../../data/be_total_therapists.json'
 import './drop.css'
 
@@ -155,24 +156,24 @@ export default function CardBarChart1() {
 
   return (
     <>
-    {/* Dropdown Tahun */}
-    <div className="py-5">
-      <div className='dropdown'>
-        <div className='dropdown-header' onClick={toggleDropdown}>
-          Select Year
-          <i className={`fa fa-chevron-right icon ${isOpen && "open"}`}></i>
-        </div>
-        <div className={`dropdown-body ${isOpen && 'open'}`}>
-          {/* TODO: RENDER `years` to the DROPDOWN???*/}
-          <div className="dropdown-item">
-              2019
-            </div>
+      {/* Dropdown Tahun */}
+      <div className="py-5">
+        <div className='dropdown'>
+          <div className='dropdown-header' onClick={toggleDropdown}>
+            Select Year
+            <i className={`fa fa-chevron-right icon ${isOpen && "open"}`}></i>
+          </div>
+          <div className={`dropdown-body ${isOpen && 'open'}`}>
+            {/* TODO: RENDER `years` to the DROPDOWN???*/}
             <div className="dropdown-item">
-              2018
-            </div>
+                2019
+              </div>
+              <div className="dropdown-item">
+                2018
+              </div>
+          </div>
         </div>
       </div>
-    </div>
 
       <div className="flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded">
         <div className="rounded-t mb-0 px-4 py-3 bg-transparent">
