@@ -35,7 +35,7 @@ export default function CardBarChart1() {
       .sort((item1, item2) => item1.end_date.toDate() - item2.end_date.toDate())  // sort ascending
       .map((item) => item.value);
   })
-  console.log(totalActiveTherMap);
+  console.log("Total active",totalActiveTherMap);
 
   // Inactive Ther
   const appTotalInactiveThers = appDataTotal
@@ -78,6 +78,11 @@ export default function CardBarChart1() {
           "May",
           "June",
           "July",
+          "August",
+          "September",
+          "Oktober",
+          "November",
+          "December"
         ],
         datasets: [
           {
@@ -160,6 +165,7 @@ export default function CardBarChart1() {
       },
     };
     let ctx = document.getElementById("bar-chart").getContext("2d");
+    if (window.myBar != undefined) window.myBar.destroy();
     window.myBar = new Chart(ctx, config);
   }, [selectedYear]);
 
@@ -177,7 +183,7 @@ export default function CardBarChart1() {
       <div className="py-5">
         <div className='dropdown'>
           <div className='dropdown-header' onClick={toggleDropdown}>
-            Selected Year: {selectedYear}
+            Selected Year : {selectedYear}
             <i className={`fa fa-chevron-right icon ${isOpen && "open"}`}></i>
           </div>
           <div className={`dropdown-body ${isOpen && 'open'}`}>

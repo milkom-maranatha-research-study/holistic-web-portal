@@ -76,6 +76,11 @@ export default function CardBarChart2() {
           "May",
           "June",
           "July",
+          "August",
+          "September",
+          "Oktober",
+          "November",
+          "December"
         ],
         datasets: [
           {
@@ -158,6 +163,7 @@ export default function CardBarChart2() {
       },
     };
     let ctx = document.getElementById("bar-chart").getContext("2d");
+    if (window.myBar != undefined) window.myBar.destroy();
     window.myBar = new Chart(ctx, config);
   }, [selectedYear]);
 
@@ -175,7 +181,7 @@ export default function CardBarChart2() {
       <div className="py-5">
         <div className='dropdown'>
           <div className='dropdown-header' onClick={toggleDropdown}>
-            Selected Year: {selectedYear}
+            Selected Year : {selectedYear}
             <i className={`fa fa-chevron-right icon ${isOpen && "open"}`}></i>
           </div>
           <div className={`dropdown-body ${isOpen && 'open'}`}>
