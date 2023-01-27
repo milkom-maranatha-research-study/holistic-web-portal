@@ -1,62 +1,46 @@
-import React, {useState, useEffect} from "react";
-// import { Link } from "react-router-dom";
-// import { AuthAPI } from "api/authentication/AuthAPI";
+import React, {useState} from "react";
+import { AuthAPI } from "api/authentication/AuthAPI";
 
 
-// const authApi = AuthAPI.getInstance();
+const authApi = AuthAPI.getInstance();
 
 export default function Login(props) {
-  const users = [
-    { id: 1, username: 'admin', password: '123456' },
-    { id: 2, username: 'giezka' , password: 'giezka123' },
-    { id: 3, username: 'panji' , password: '123456' },
-];
-  // const [token, setToken] = useState(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
-  // function login() {
-  //   if (!username) {
-  //     alert("Please register new account!");
-  //     return;
-  //   }
-
-  //   authApi.login(username, password)
-  //      .then(response => {
-  //         console.log(response.expiry);
-  //         console.log(response.token);
-  //         console.log(response.user);
-  //         // store the user in localStorage
-  //         // localStorage.setItem('user', response.user)
-  //         // setToken(response.token);
-  //         localStorage.setItem('token', response.token)
-  //         props.history.push('/admin/Dashboard');
-  //      })
-  //      .catch(err => console.error(err));
-  // }
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   function handleSubmit(event) {
     event.preventDefault();
-    const user = users.find((user) => user.username === username && user.password === password);
-    if (user) {
-       localStorage.setItem('id', user.id)
-       props.history.push('/admin/Dashboard');
-    }
-    else {
-      props.history.push('/');
-      window.alert("Invalid Username or Password!");
-    }
-}
-useEffect(() => {
-console.log(username)
-console.log(password)
-}, []);
 
-  // function handleSubmit(event) {
-  //   event.preventDefault();
-  //   login(username, password);
-  // }
-  // let user = JSON.parse(sessionStorage.getItem('data'));
+    if (isLoggingIn) {
+      return;
+    }
+
+    setIsLoggingIn(true);
+
+    authApi.login(username, password)
+      .then(response => {
+        console.log(response.expiry);
+        console.log(response.token);
+        console.log(response.user);
+        
+        // store the user in localStorage
+        localStorage.setItem('user', response.user);
+        localStorage.setItem('token', response.token)
+
+        props.history.push('/admin/Dashboard');
+
+        setIsLoggingIn(true);
+      })
+      .catch(err => {
+        console.error(err);
+
+        props.history.push('/');
+        window.alert("Invalid Username or Password!");
+
+        setIsLoggingIn(false);
+      });
+  }
 
   return (
     <>
@@ -107,7 +91,6 @@ console.log(password)
                       value="Sign in"
                     />
                      
-                    
                   </div>
                 </form>
               </div>
