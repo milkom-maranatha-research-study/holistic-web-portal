@@ -10,7 +10,7 @@ import { data } from "autoprefixer";
 // const authApi = AuthAPI.getInstance();
 
 export default function Dashboard(props) {
-  // const [token, setToken] = useState(localStorage.getItem('token'));
+  const [id, setId] = useState(localStorage.getItem('id'));
   // const [therapistsData, setTherapistsData] = useState([]);
   // // const token = useSelector(state => state.auth.token); // assuming you have token in your auth state
   
@@ -40,24 +40,22 @@ export default function Dashboard(props) {
   //      })
   //      .catch(err => console.error(err));
   // }
+
+   function logout() {
+    if (!id) {
+      alert("Please login first!");
+      return;
+    }
+    alert('Are you sure you want to sign out?');
+    setId(null);
+    props.history.push('/');
+  }
   return (
     <>
       <div className="flex flex-wrap">
         <div className="w-full xl:w-1/2 mb-12 xl:mb-0 px-4">
         <CardBarChart1/>
         </div>
-      </div>
-      <div className="flex flex-wrap mt-4">
-        <div className="text-center mt-6">
-              <button
-                className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                type="button"
-                // onClick={() => logout()}
-              >
-                Sign Out
-              </button>
-
-            </div>
       </div>
     </>
   );

@@ -1,40 +1,62 @@
-import React, {useState} from "react";
-import { Link } from "react-router-dom";
-import { AuthAPI } from "api/authentication/AuthAPI";
+import React, {useState, useEffect} from "react";
+// import { Link } from "react-router-dom";
+// import { AuthAPI } from "api/authentication/AuthAPI";
 
 
-const authApi = AuthAPI.getInstance();
+// const authApi = AuthAPI.getInstance();
 
 export default function Login(props) {
-  const [token, setToken] = useState(null);
+  const users = [
+    { id: 1, username: 'admin', password: '123456' },
+    { id: 2, username: 'giezka' , password: 'giezka123' },
+    { id: 3, username: 'panji' , password: '123456' },
+];
+  // const [token, setToken] = useState(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  function login() {
-    if (!username) {
-      alert("Please register new account!");
-      return;
-    }
+  // function login() {
+  //   if (!username) {
+  //     alert("Please register new account!");
+  //     return;
+  //   }
 
-    authApi.login(username, password)
-       .then(response => {
-          console.log(response.expiry);
-          console.log(response.token);
-          console.log(response.user);
-          // store the user in localStorage
-          // localStorage.setItem('user', response.user)
-          // setToken(response.token);
-          localStorage.setItem('token', response.token)
-          props.history.push('/admin/Dashboard');
-       })
-       .catch(err => console.error(err));
-  }
+  //   authApi.login(username, password)
+  //      .then(response => {
+  //         console.log(response.expiry);
+  //         console.log(response.token);
+  //         console.log(response.user);
+  //         // store the user in localStorage
+  //         // localStorage.setItem('user', response.user)
+  //         // setToken(response.token);
+  //         localStorage.setItem('token', response.token)
+  //         props.history.push('/admin/Dashboard');
+  //      })
+  //      .catch(err => console.error(err));
+  // }
 
   function handleSubmit(event) {
     event.preventDefault();
-    login(username, password);
-  }
-  let user = JSON.parse(sessionStorage.getItem('data'));
+    const user = users.find((user) => user.username === username && user.password === password);
+    if (user) {
+       localStorage.setItem('id', user.id)
+       props.history.push('/admin/Dashboard');
+    }
+    else {
+      props.history.push('/');
+      window.alert("Invalid Username or Password!");
+    }
+}
+useEffect(() => {
+console.log(username)
+console.log(password)
+}, []);
+
+  // function handleSubmit(event) {
+  //   event.preventDefault();
+  //   login(username, password);
+  // }
+  // let user = JSON.parse(sessionStorage.getItem('data'));
 
   return (
     <>
@@ -80,24 +102,13 @@ export default function Login(props) {
 
                   <div className="text-center mt-6">
                     <input
-                      className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
+                      className="cursor-pointer bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                       type="submit"
                       value="Sign in"
                     />
                      
                     
                   </div>
-                  {/* <div className="mt-3">
-                    <p className="text-center text-sm mb-3">Not registered?</p>
-                      <Link to="/auth/register" className="text-blueGray-600">
-                        <button
-                      className="bg-blueGray-800 text-white hover:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
-                      type="button"
-                    >
-                      Sign Up
-                    </button>
-                      </Link>
-                  </div> */}
                 </form>
               </div>
             </div>

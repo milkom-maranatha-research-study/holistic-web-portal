@@ -1,7 +1,12 @@
-import React from "react";
+import React, {useState} from "react";
 import { createPopper } from "@popperjs/core";
+import { Redirect } from "react-router";
 
 const UserDropdown = ({onclick}) => {
+  const [id, setId] = useState(localStorage.getItem('id'));
+  const [redirect, setRedirect] = useState(false);
+ 
+  
   // dropdown props
   const [dropdownPopoverShow, setDropdownPopoverShow] = React.useState(false);
   const btnDropdownRef = React.createRef();
@@ -15,6 +20,18 @@ const UserDropdown = ({onclick}) => {
   const closeDropdownPopover = () => {
     setDropdownPopoverShow(false);
   };
+  if(redirect){
+    return <Redirect to={{ pathname: '/' }} />;
+  };
+const logout= ()=> {
+    if (!id) {
+      alert("Please login first!");
+      return;
+    }
+    alert('Are you sure you want to sign out?');
+    setRedirect(true);
+    setId(null);
+  }
   return (
     <>
       <a
@@ -44,13 +61,13 @@ const UserDropdown = ({onclick}) => {
         }
       >
         <a
-          href="#pablo"
+          href=""
           className={
             "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
           }
-          onClick={(e) => e.preventDefault()}
+          onClick={logout}
         >
-          Log Out
+          Sign Out
         </a>
       </div>
     </>

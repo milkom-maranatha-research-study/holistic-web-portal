@@ -102,7 +102,7 @@ export default function Sidebar() {
                   }
                   to="/admin/tables"
                 >
-                  Churn and Retention Rate
+                  Churn & Retention Rate
                 </Link>
               </li>
             </ul>
