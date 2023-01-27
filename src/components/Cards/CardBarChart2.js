@@ -8,61 +8,114 @@ import moment from 'moment';
 
 export default function CardBarChart2() {
   // Data preparations
-  // Extracts unique years
-  const appDataRate = dataRate.filter((item) => !item.organization_id);
+  const appDataRate = React.useMemo(() => {
+    console.log("Fetching data therapists' rates by app...");
+    return dataRate.filter((item) => !item.organization_id && item.period_type === "monthly");
+  }, []);
 
-  const yearSet = {};
-  appDataRate.map((item) => moment(item.start_date, "YYYY/MM/DD").year())
-    .forEach(item => yearSet[item] = item);
+  // Extracts available years
+  const years = React.useMemo(() => {
+    console.log("Fetching available years...");
 
-  const years = Object.entries(yearSet).map(item => item[0])
+    const yearSet = {};
+
+    appDataRate.map((item) => moment(item.start_date, "YYYY/MM/DD").year())
+      .forEach(item => yearSet[item] = item);
+
+    return Object.entries(yearSet).map(item => item[0]);
+  }, [appDataRate]);
+
   console.log(years);
 
   // Retention Rate
-  const appRetentionRates = appDataRate
-    .filter((item) => item.type === "retention_rate" && item.period_type === "monthly")
-    .map((item) => ({
-      ...item,
-      start_date: moment(item.start_date, "YYYY/MM/DD"),
-      end_date: moment(item.end_date, "YYYY/MM/DD")
-    }));
+  const appRetentionRates = React.useMemo(() => {
+    console.log("Fetching therapists' retention rates...");
 
-  const retentionRateMap = {};
-  years.forEach((year) => {
-    retentionRateMap[year] = appRetentionRates
-      .filter((item) => item.start_date.year() >= year && item.end_date.year() <= year)
-      .sort((item1, item2) => item1.end_date.toDate() - item2.end_date.toDate())  // sort ascending
-      .map((item) => item.value);
-  })
+    return appDataRate
+      .filter((item) => item.type === "retention_rate")
+      .map((item) => ({
+        ...item,
+        start_date: moment(item.start_date, "YYYY/MM/DD"),
+        end_date: moment(item.end_date, "YYYY/MM/DD")
+      }));
+  }, [appDataRate]);
+
+  const retentionRateMap = React.useMemo(() => {
+    console.log("Converting therapists' retention rates into a map...");
+
+    const map = {};
+
+    years.forEach((year) => {
+      map[year] = appRetentionRates
+        .filter((item) => item.start_date.year() >= year && item.end_date.year() <= year)
+        .sort((item1, item2) => item1.end_date.toDate() - item2.end_date.toDate());  // sort ascending
+    });
+
+    return map;
+  }, [years, appRetentionRates]);
+
   console.log(retentionRateMap);
 
   // Churn Rate
-  const appChurnRates = appDataRate
-  .filter((item) => item.type === "churn_rate" && item.period_type === "monthly")
-  .map((item) => ({
-    ...item,
-    start_date: moment(item.start_date, "YYYY/MM/DD"),
-    end_date: moment(item.end_date, "YYYY/MM/DD")
-  }));
+  const appChurnRates = React.useMemo(() => {
+    console.log("Fetching therapists' churn rates...");
 
-  const churnRateMap = {};
-  years.forEach((year) => {
-    churnRateMap[year] = appChurnRates
-      .filter((item) => item.start_date.year() >= year && item.end_date.year() <= year)
-      .sort((item1, item2) => item1.end_date.toDate() - item2.end_date.toDate())  // sort ascending
-      .map((item) => item.value);
-  })
+    return appDataRate
+      .filter((item) => item.type === "churn_rate")
+      .map((item) => ({
+        ...item,
+        start_date: moment(item.start_date, "YYYY/MM/DD"),
+        end_date: moment(item.end_date, "YYYY/MM/DD")
+      }));
+  }, [appDataRate]);
+
+  const churnRateMap = React.useMemo(() => {
+    console.log("Converting therapists' churn rates into a map...");
+
+    const map = {};
+
+    years.forEach((year) => {
+      map[year] = appChurnRates
+        .filter((item) => item.start_date.year() >= year && item.end_date.year() <= year)
+        .sort((item1, item2) => item1.end_date.toDate() - item2.end_date.toDate());  // sort ascending
+    });
+    return map;
+  }, [years, appChurnRates]);
 
   // View States
   const [isOpen, setOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState(years[years.length - 1]);
+  const [selectedRetentionRates, setSelectedRetentionRates] = useState(
+    retentionRateMap[selectedYear].map((item) => item.value)
+  );
+  const [selectedChurnRates, setSelectedChurnRates] = useState(
+    churnRateMap[selectedYear].map((item) => item.value)
+  );
 
   // View Actions
-  const toggleDropdown = () => setOpen(!isOpen);
-  const selectYear = (year) => {
+  const getMonthlyMap = React.useCallback(() => ({
+    0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0,
+    6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0
+  }), [])
+  const toggleDropdown = React.useCallback(() => setOpen(!isOpen), [isOpen]);
+  const selectYear = React.useCallback((year) => {
+    setOpen(!isOpen);
+
     setSelectedYear(year);
-    toggleDropdown();
-  }
+
+    let monthlyMap = getMonthlyMap();
+    retentionRateMap[year].forEach((item) => {
+      monthlyMap[item.start_date.month()] = item.value
+    });
+    setSelectedRetentionRates(Object.entries(monthlyMap).map(item => item[1]));
+
+    monthlyMap = getMonthlyMap();
+    churnRateMap[year].forEach((item) => {
+      monthlyMap[item.start_date.month()] = item.value
+    });
+    setSelectedChurnRates(Object.entries(monthlyMap).map(item => item[1]));
+
+  }, [retentionRateMap, churnRateMap, isOpen, getMonthlyMap]);
   
   React.useEffect(() => {
     let config = {
@@ -78,16 +131,16 @@ export default function CardBarChart2() {
           "July",
           "August",
           "September",
-          "Oktober",
+          "October",
           "November",
-          "December"
+          "December",
         ],
         datasets: [
           {
             label: 'Retention Rate',
             backgroundColor: "#ed64a6",
             borderColor: "#ed64a6",
-            data: retentionRateMap[years[4]],  // TODO: Pass selected YEAR HERE!!!
+            data: selectedRetentionRates,
             fill: false,
             barThickness: 8,
           },
@@ -96,7 +149,7 @@ export default function CardBarChart2() {
             fill: false,
             backgroundColor: "#4c51bf",
             borderColor: "#4c51bf",
-            data: churnRateMap[years[4]],  // TODO: Pass selected YEAR HERE!!!,
+            data: selectedChurnRates,
             barThickness: 8,
           },
         ],
@@ -162,14 +215,19 @@ export default function CardBarChart2() {
         },
       },
     };
+
+    // Reset bar-chart
+    if (window.myBar !== undefined) {
+      window.myBar.destroy();
+    }
+
     let ctx = document.getElementById("bar-chart").getContext("2d");
-    if (window.myBar != undefined) window.myBar.destroy();
     window.myBar = new Chart(ctx, config);
-  }, [selectedYear]);
+  }, [selectedRetentionRates, selectedChurnRates]);
 
   const yearItemViews = years.map((year) => {
     return (
-      <div className="dropdown-item" onClick={() => selectYear(year)}>
+      <div className="dropdown-item" key={year} onClick={() => selectYear(year)}>
         {year}
       </div>
     )

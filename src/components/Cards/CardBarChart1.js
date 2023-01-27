@@ -9,61 +9,114 @@ import moment from 'moment';
 
 export default function CardBarChart1() {
   // Data preparations
-  // Extracts unique years
-  const appDataTotal = dataTotal.filter((item) => !item.organization_id);
+  const appDataTotal = React.useMemo(() => {
+    console.log("Fetching data total therapist by app...");
+    return dataTotal.filter((item) => !item.organization_id && item.period_type === "monthly");
+  }, []);
 
-  const yearSet = {};
-  appDataTotal.map((item) => moment(item.start_date, "YYYY/MM/DD").year())
-    .forEach(item => yearSet[item] = item);
+  // Extracts available years
+  const years = React.useMemo(() => {
+    console.log("Fetching available years...");
 
-  const years = Object.entries(yearSet).map(item => item[0])
+    const yearSet = {};
+
+    appDataTotal.map((item) => moment(item.start_date, "YYYY/MM/DD").year())
+      .forEach(item => yearSet[item] = item);
+
+    return Object.entries(yearSet).map(item => item[0]);
+  }, [appDataTotal]);
+
   console.log(years);
 
   // Active Ther
-  const appTotalActiveThers = appDataTotal
-    .filter((item) => item.type === "active" && item.period_type === "monthly")
-    .map((item) => ({
-      ...item,
-      start_date: moment(item.start_date, "YYYY/MM/DD"),
-      end_date: moment(item.end_date, "YYYY/MM/DD")
-    }));
+  const appTotalActiveThers = React.useMemo(() => {
+    console.log("Fetching total active therapists...");
 
-  const totalActiveTherMap = {};
-  years.forEach((year) => {
-    totalActiveTherMap[year] = appTotalActiveThers
-      .filter((item) => item.start_date.year() >= year && item.end_date.year() <= year)
-      .sort((item1, item2) => item1.end_date.toDate() - item2.end_date.toDate())  // sort ascending
-      .map((item) => item.value);
-  })
-  console.log("Total active",totalActiveTherMap);
+    return appDataTotal
+      .filter((item) => item.type === "active")
+      .map((item) => ({
+        ...item,
+        start_date: moment(item.start_date, "YYYY/MM/DD"),
+        end_date: moment(item.end_date, "YYYY/MM/DD")
+      }));
+  }, [appDataTotal]);
+
+  const totalActiveTherMap = React.useMemo(() => {
+    console.log("Converting total active therapists into a map...");
+
+    const map = {};
+
+    years.forEach((year) => {
+      map[year] = appTotalActiveThers
+        .filter((item) => item.start_date.year() >= year && item.end_date.year() <= year)
+        .sort((item1, item2) => item1.end_date.toDate() - item2.end_date.toDate());  // sort ascending
+    });
+
+    return map;
+  }, [years, appTotalActiveThers]);
+
+  console.log(totalActiveTherMap);
 
   // Inactive Ther
-  const appTotalInactiveThers = appDataTotal
-  .filter((item) => item.type === "inactive" && item.period_type === "monthly")
-  .map((item) => ({
-    ...item,
-    start_date: moment(item.start_date, "YYYY/MM/DD"),
-    end_date: moment(item.end_date, "YYYY/MM/DD")
-  }));
+  const appTotalInactiveThers = React.useMemo(() => {
+    console.log("Fetching total inactive therapists...");
 
-  const totalInactiveTherMap = {};
-  years.forEach((year) => {
-    totalInactiveTherMap[year] = appTotalInactiveThers
-      .filter((item) => item.start_date.year() >= year && item.end_date.year() <= year)
-      .sort((item1, item2) => item1.end_date.toDate() - item2.end_date.toDate())  // sort ascending
-      .map((item) => item.value);
-  })
+    return appDataTotal
+      .filter((item) => item.type === "inactive")
+      .map((item) => ({
+        ...item,
+        start_date: moment(item.start_date, "YYYY/MM/DD"),
+        end_date: moment(item.end_date, "YYYY/MM/DD")
+      }));
+  }, [appDataTotal]);
+
+  const totalInactiveTherMap = React.useMemo(() => {
+    console.log("Converting total inactive therapists into a map...");
+
+    const map = {};
+
+    years.forEach((year) => {
+      map[year] = appTotalInactiveThers
+        .filter((item) => item.start_date.year() >= year && item.end_date.year() <= year)
+        .sort((item1, item2) => item1.end_date.toDate() - item2.end_date.toDate());  // sort ascending
+    });
+    return map;
+  }, [years, appTotalInactiveThers]);
 
   // View States
   const [isOpen, setOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState(years[years.length - 1]);
+  const [selectedActiveThers, setSelectedActiveTher] = useState(
+    totalActiveTherMap[selectedYear].map((item) => item.value)
+  );
+  const [selectedInactiveThers, setSelectedInactiveTher] = useState(
+    totalInactiveTherMap[selectedYear].map((item) => item.value)
+  );
 
   // View Actions
-  const toggleDropdown = () => setOpen(!isOpen);
-  const selectYear = (year) => {
+  const getMonthlyMap = React.useCallback(() => ({
+    0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0,
+    6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0
+  }), [])
+  const toggleDropdown = React.useCallback(() => setOpen(!isOpen), [isOpen]);
+  const selectYear = React.useCallback((year) => {
+    setOpen(!isOpen);
+
     setSelectedYear(year);
-    toggleDropdown();
-  }
+
+    let monthlyMap = getMonthlyMap();
+    totalActiveTherMap[year].forEach((item) => {
+      monthlyMap[item.start_date.month()] = item.value
+    });
+    setSelectedActiveTher(Object.entries(monthlyMap).map(item => item[1]));
+
+    monthlyMap = getMonthlyMap();
+    totalInactiveTherMap[year].forEach((item) => {
+      monthlyMap[item.start_date.month()] = item.value
+    });
+    setSelectedInactiveTher(Object.entries(monthlyMap).map(item => item[1]));
+
+  }, [totalActiveTherMap, totalInactiveTherMap, isOpen, getMonthlyMap]);
 
 
   React.useEffect(() => {
@@ -80,16 +133,16 @@ export default function CardBarChart1() {
           "July",
           "August",
           "September",
-          "Oktober",
+          "October",
           "November",
-          "December"
+          "December",
         ],
         datasets: [
           {
             label: 'Active Therapist',
             backgroundColor: "#ed64a6",
             borderColor: "#ed64a6",
-            data: totalActiveTherMap[selectedYear],
+            data: selectedActiveThers,
             fill: false,
             barThickness: 8,
           },
@@ -98,7 +151,7 @@ export default function CardBarChart1() {
             fill: false,
             backgroundColor: "#4c51bf",
             borderColor: "#4c51bf",
-            data: totalInactiveTherMap[selectedYear],
+            data: selectedInactiveThers,
             barThickness: 8,
           },
         ],
@@ -164,14 +217,19 @@ export default function CardBarChart1() {
         },
       },
     };
+
+    // Reset bar-chart
+    if (window.myBar !== undefined) {
+      window.myBar.destroy();
+    }
+
     let ctx = document.getElementById("bar-chart").getContext("2d");
-    if (window.myBar != undefined) window.myBar.destroy();
     window.myBar = new Chart(ctx, config);
-  }, [selectedYear]);
+  }, [selectedActiveThers, selectedInactiveThers]);
 
   const yearItemViews = years.map((year) => {
     return (
-      <div className="dropdown-item" onClick={() => selectYear(year)}>
+      <div className="dropdown-item" key={year} onClick={() => selectYear(year)}>
         {year}
       </div>
     )
