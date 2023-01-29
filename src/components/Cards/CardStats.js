@@ -20,7 +20,7 @@ export default function CardStats({
               <span className="font-semibold text-xl text-blueGray-700">
                 {statTitle}
               </span>
-              <p className="font-light text-xs text-left" style={{"font-style": "italic", "margin-top": 8}}>
+              <p className="font-light text-xs text-left" style={{"fontStyle": "italic", "marginTop": 8}}>
                 {statLastUpdated}
               </p>
             </div>
