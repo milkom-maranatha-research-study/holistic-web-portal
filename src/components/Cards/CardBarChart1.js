@@ -1,123 +1,52 @@
 import React, {useState} from "react";
 import Chart from "chart.js";
 
-import dataTotal from '../../data/be_total_therapists.json'
-import './drop.css'
-
-import moment from 'moment';
-
+import { getTotalTherapistMap } from "data/TotalTherapist"; 
+import { toMonthlyValues } from "data/mappers/TotalTherapist";
+import './drop.css';
 
 export default function CardBarChart1() {
-  // Data preparations
-  const appDataTotal = React.useMemo(() => {
-    console.log("Fetching data total therapist by app...");
-    return dataTotal.filter((item) => !item.organization_id && item.period_type === "monthly");
-  }, []);
-
-  // Extracts available years
-  const years = React.useMemo(() => {
-    console.log("Fetching available years...");
-
-    const yearSet = {};
-
-    appDataTotal.map((item) => moment(item.start_date, "YYYY/MM/DD").year())
-      .forEach(item => yearSet[item] = item);
-
-    return Object.entries(yearSet).map(item => item[0]);
-  }, [appDataTotal]);
-
-  console.log(years);
-
-  // Active Ther
-  const appTotalActiveThers = React.useMemo(() => {
-    console.log("Fetching total active therapists...");
-
-    return appDataTotal
-      .filter((item) => item.type === "active")
-      .map((item) => ({
-        ...item,
-        start_date: moment(item.start_date, "YYYY/MM/DD"),
-        end_date: moment(item.end_date, "YYYY/MM/DD")
-      }));
-  }, [appDataTotal]);
-
-  const totalActiveTherMap = React.useMemo(() => {
-    console.log("Converting total active therapists into a map...");
-
-    const map = {};
-
-    years.forEach((year) => {
-      map[year] = appTotalActiveThers
-        .filter((item) => item.start_date.year() >= year && item.end_date.year() <= year)
-        .sort((item1, item2) => item1.end_date.toDate() - item2.end_date.toDate());  // sort ascending
-    });
-
-    return map;
-  }, [years, appTotalActiveThers]);
-
-  console.log(totalActiveTherMap);
-
-  // Inactive Ther
-  const appTotalInactiveThers = React.useMemo(() => {
-    console.log("Fetching total inactive therapists...");
-
-    return appDataTotal
-      .filter((item) => item.type === "inactive")
-      .map((item) => ({
-        ...item,
-        start_date: moment(item.start_date, "YYYY/MM/DD"),
-        end_date: moment(item.end_date, "YYYY/MM/DD")
-      }));
-  }, [appDataTotal]);
-
-  const totalInactiveTherMap = React.useMemo(() => {
-    console.log("Converting total inactive therapists into a map...");
-
-    const map = {};
-
-    years.forEach((year) => {
-      map[year] = appTotalInactiveThers
-        .filter((item) => item.start_date.year() >= year && item.end_date.year() <= year)
-        .sort((item1, item2) => item1.end_date.toDate() - item2.end_date.toDate());  // sort ascending
-    });
-    return map;
-  }, [years, appTotalInactiveThers]);
 
   // View States
-  const [isOpen, setOpen] = useState(false);
-  const [selectedYear, setSelectedYear] = useState(years[years.length - 1]);
-  const [selectedActiveThers, setSelectedActiveTher] = useState(
-    totalActiveTherMap[selectedYear].map((item) => item.value)
-  );
-  const [selectedInactiveThers, setSelectedInactiveTher] = useState(
-    totalInactiveTherMap[selectedYear].map((item) => item.value)
-  );
+  const [isYearPopUpOpen, setIsYearPopUpOpen] = useState(false);
+  const [years, setYears] = useState([]);
+  const [activeMap, setActiveMap] = useState({});
+  const [inactiveMap, setInactiveMap] = useState({});
+
+  const [selectedYear, setSelectedYear] = useState(null);
+  const [selectedActiveThers, setSelectedActiveThers] = useState(null);
+  const [selectedInactiveThers, setSelectedInactiveThers] = useState(null);
 
   // View Actions
-  const getMonthlyMap = React.useCallback(() => ({
-    0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0,
-    6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0
-  }), [])
-  const toggleDropdown = React.useCallback(() => setOpen(!isOpen), [isOpen]);
-  const selectYear = React.useCallback((year) => {
-    setOpen(!isOpen);
+  const toggleDropdown = React.useCallback(() => (
+    setIsYearPopUpOpen(!isYearPopUpOpen)
+  ), [isYearPopUpOpen]);
 
+  const selectYear = React.useCallback((year) => {
+    setIsYearPopUpOpen(!isYearPopUpOpen);
     setSelectedYear(year);
 
-    let monthlyMap = getMonthlyMap();
-    totalActiveTherMap[year].forEach((item) => {
-      monthlyMap[item.start_date.month()] = item.value
+    setSelectedActiveThers(toMonthlyValues(activeMap[year]));
+    setSelectedInactiveThers(toMonthlyValues(inactiveMap[year]));
+  }, [activeMap, inactiveMap, isYearPopUpOpen]);
+
+  // Data preparations
+  const token = React.useMemo(() => localStorage.getItem('token'), []);
+
+  React.useMemo(() => {
+    getTotalTherapistMap(token).then(map => {
+      const {years, activeMap, inactiveMap} = map;
+      const latestYear = years[years.length - 1];
+
+      setYears(years);
+      setActiveMap(activeMap);
+      setInactiveMap(inactiveMap);
+
+      setSelectedYear(latestYear);
+      setSelectedActiveThers(toMonthlyValues(activeMap[latestYear]));
+      setSelectedInactiveThers(toMonthlyValues(inactiveMap[latestYear]));
     });
-    setSelectedActiveTher(Object.entries(monthlyMap).map(item => item[1]));
-
-    monthlyMap = getMonthlyMap();
-    totalInactiveTherMap[year].forEach((item) => {
-      monthlyMap[item.start_date.month()] = item.value
-    });
-    setSelectedInactiveTher(Object.entries(monthlyMap).map(item => item[1]));
-
-  }, [totalActiveTherMap, totalInactiveTherMap, isOpen, getMonthlyMap]);
-
+  }, [token]);
 
   React.useEffect(() => {
     let config = {
@@ -241,10 +170,10 @@ export default function CardBarChart1() {
       <div className="py-5">
         <div className='dropdown'>
           <div className='dropdown-header' onClick={toggleDropdown}>
-            Selected Year : {selectedYear}
-            <i className={`fa fa-chevron-right icon ${isOpen && "open"}`}></i>
+            {selectedYear ? `Selected Year : ${selectedYear}` : 'Select Year'}
+            <i className={`fa fa-chevron-right icon ${isYearPopUpOpen && "open"}`}></i>
           </div>
-          <div className={`dropdown-body ${isOpen && 'open'}`}>
+          <div className={`dropdown-body ${isYearPopUpOpen && 'open'}`}>
             {yearItemViews}
           </div>
         </div>
