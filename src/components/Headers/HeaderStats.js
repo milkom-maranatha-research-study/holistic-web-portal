@@ -1,33 +1,28 @@
 import React, {useState} from "react";
-import dataTotal from '../../data/be_total_therapists.json'
-import moment from 'moment';
+
+import { getOverviewTotalTherapist } from "data/TotalTherapist";
+import moment from "moment";
 
 // components
 
 import CardStats from "components/Cards/CardStats.js";
 
 export default function HeaderStats() {
+
+  // Data preparations
+  const token = React.useMemo(() => localStorage.getItem('token'), []);
+
+  const [totalActive, setTotalActive] = useState(null);
+  const [totalInactive, setTotalInactive] = useState(null);
   
-  const appDataTotalActive = dataTotal
-    .filter((item) => !item.organization_id && item.type === "active" && item.period_type === "alltime")
-    .map((item) => ({
-      ...item,
-      start_date: moment(item.start_date, "YYYY/MM/DD").toDate(),
-      end_date: moment(item.end_date, "YYYY/MM/DD").toDate()
-    }))
-    .sort((item1, item2) => item2.end_date - item1.end_date);  // sort descending
+  React.useMemo(() => {
+    getOverviewTotalTherapist(token).then(map => {
+      const {active, inactive} = map;
 
-  const appDataTotalInactive = dataTotal
-    .filter((item) => !item.organization_id && item.type === "inactive" && item.period_type === "alltime")
-    .map((item) => ({
-      ...item,
-      start_date: moment(item.start_date, "YYYY/MM/DD").toDate(),
-      end_date: moment(item.end_date, "YYYY/MM/DD").toDate()
-    }))
-    .sort((item1, item2) => item2.end_date - item1.end_date);  // sort descending
-
-  const recentTotalActiveTher = appDataTotalActive[0].value;
-  const recentTotalInactiveTher = appDataTotalInactive[0].value;
+      setTotalActive(active);
+      setTotalInactive(inactive);
+    });
+  }, [token]);
 
   return (
     <>
@@ -40,7 +35,8 @@ export default function HeaderStats() {
               <div className="w-1/2 lg:w-1/2 xl:w-1/2 px-4">
                 <CardStats
                   statSubtitle="TOTAL ACTIVE TERAPHISTS"
-                  statTitle={recentTotalActiveTher}
+                  statTitle={totalActive?.value.toString()}
+                  statLastUpdated={"Last synchronized at " + totalActive?.endDate.format('D MMM, YYYY')}
                   statIconName="far fa-chart-bar"
                   statIconColor="bg-lightBlue-500"
                 />
@@ -48,7 +44,8 @@ export default function HeaderStats() {
               <div className="w-1/2 lg:w-1/2 xl:w-1/2 px-4">
                 <CardStats
                   statSubtitle="TOTAL INACTIVE TERAPHISTS"
-                  statTitle={recentTotalInactiveTher}
+                  statTitle={totalInactive?.value.toString()}
+                  statLastUpdated={"Last synchronized at " + totalInactive?.endDate.format('D MMM, YYYY')}
                   statIconName="far fa-chart-bar"
                   statIconColor="bg-red-500"
                 />
