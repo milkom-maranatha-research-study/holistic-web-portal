@@ -5,9 +5,43 @@ import moment from 'moment';
 const api = DataPresentationAPI.getInstance();
 
 
+export async function getOverviewTotalTherapist(token) {
+    const totalTherapists = await fetchOverviewTotalTheratpist(token);
+    console.log("Overview totalTherapists", totalTherapists);
+
+    const actives = totalTherapists.filter((item) => item.isActive);
+    const inactives = totalTherapists.filter((item) => !item.isActive);
+    console.log("Overview actives", actives);
+    console.log("Overview inactives", inactives);
+
+    return {
+        active: actives.length > 0 ? actives[0] : null,
+        inactive: inactives.length > 0 ? inactives[0] : null
+    };
+}
+
+async function fetchOverviewTotalTheratpist(token) {
+    console.log("Fetching overview total therapist from BE...");
+
+    const query = {periodType: 'alltime', nicedayOnly: true};
+    const totalTherapists = await api.getTotalTherapists(token, query)
+        .then(response => {
+            return response
+                .map((item) => ({
+                    ...item,
+                    startDate: moment(item.startDate, "YYYY/MM/DD"),
+                    endDate: moment(item.endDate, "YYYY/MM/DD")
+                }))
+                .sort((item1, item2) => item2.endDate.toDate() - item1.endDate.toDate());  // sort descending
+        });
+
+    return totalTherapists;
+}
+
+
 export async function getTotalTherapistMap(token) {
-    const totalTherapists = await fetchTotalTherapists(token);
-    console.log("totalTherapists", totalTherapists[0]);
+    const totalTherapists = await fetchMonthlyTotalTherapists(token);
+    console.log("totalTherapists", totalTherapists);
 
     const years = getAvailableYears(totalTherapists);
     console.log("Years", years);
@@ -21,7 +55,7 @@ export async function getTotalTherapistMap(token) {
     return {years, activeMap, inactiveMap};
 };
 
-async function fetchTotalTherapists(token) {
+async function fetchMonthlyTotalTherapists(token) {
     console.log("Fetching monthly total therapist from BE...");
 
     const query = {periodType: 'monthly', nicedayOnly: true};
