@@ -81,7 +81,7 @@ export class DataPresentationAPI extends HTTPRequest {
      *      "startDate": "2018-01-01",
      *      "endDate": "2018-12-31",
      *      "type": "retention_rate",
-     *      "rateValue": 0.0
+     *      "value": 0.0
      *  },
      *  {
      *      "periodType": "yearly",
@@ -89,7 +89,7 @@ export class DataPresentationAPI extends HTTPRequest {
      *      "startDate": "2019-01-01",
      *      "endDate": "2019-12-31",
      *      "type": "retention_rate",
-     *      "rateValue": 0.98
+     *      "value": 0.98
      *  }
      * ]
      * ```
