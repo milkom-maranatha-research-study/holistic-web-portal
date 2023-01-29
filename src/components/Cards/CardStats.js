@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 export default function CardStats({
   statSubtitle,
   statTitle,
+  statLastUpdated,
   statIconName,
   statIconColor,
 }) {
@@ -19,6 +20,9 @@ export default function CardStats({
               <span className="font-semibold text-xl text-blueGray-700">
                 {statTitle}
               </span>
+              <p className="font-light text-xs text-left" style={{"font-style": "italic", "margin-top": 8}}>
+                {statLastUpdated}
+              </p>
             </div>
             <div className="relative w-auto pl-4 flex-initial">
               <div
@@ -42,6 +46,7 @@ export default function CardStats({
 CardStats.propTypes = {
   statSubtitle: PropTypes.string,
   statTitle: PropTypes.string,
+  statLastUpdated: PropTypes.string,
   // can be any of the text color utilities
   // from tailwindcss
   statIconName: PropTypes.string,
