@@ -1,121 +1,54 @@
 import React, {useState}  from "react";
 import Chart from "chart.js";
 
-import dataRate from '../../data/be_therapists_rates.json';
+import { getTherapistRateMap } from "data/TherapistRate"; 
+import { toMonthlyValues } from "data/mappers/TherapistRate";
+
 import './drop.css'
 
-import moment from 'moment';
 
 export default function CardBarChart2() {
-  // Data preparations
-  const appDataRate = React.useMemo(() => {
-    console.log("Fetching data therapists' rates by app...");
-    return dataRate.filter((item) => !item.organization_id && item.period_type === "monthly");
-  }, []);
-
-  // Extracts available years
-  const years = React.useMemo(() => {
-    console.log("Fetching available years...");
-
-    const yearSet = {};
-
-    appDataRate.map((item) => moment(item.start_date, "YYYY/MM/DD").year())
-      .forEach(item => yearSet[item] = item);
-
-    return Object.entries(yearSet).map(item => item[0]);
-  }, [appDataRate]);
-
-  console.log(years);
-
-  // Retention Rate
-  const appRetentionRates = React.useMemo(() => {
-    console.log("Fetching therapists' retention rates...");
-
-    return appDataRate
-      .filter((item) => item.type === "retention_rate")
-      .map((item) => ({
-        ...item,
-        start_date: moment(item.start_date, "YYYY/MM/DD"),
-        end_date: moment(item.end_date, "YYYY/MM/DD")
-      }));
-  }, [appDataRate]);
-
-  const retentionRateMap = React.useMemo(() => {
-    console.log("Converting therapists' retention rates into a map...");
-
-    const map = {};
-
-    years.forEach((year) => {
-      map[year] = appRetentionRates
-        .filter((item) => item.start_date.year() >= year && item.end_date.year() <= year)
-        .sort((item1, item2) => item1.end_date.toDate() - item2.end_date.toDate());  // sort ascending
-    });
-
-    return map;
-  }, [years, appRetentionRates]);
-
-  console.log(retentionRateMap);
-
-  // Churn Rate
-  const appChurnRates = React.useMemo(() => {
-    console.log("Fetching therapists' churn rates...");
-
-    return appDataRate
-      .filter((item) => item.type === "churn_rate")
-      .map((item) => ({
-        ...item,
-        start_date: moment(item.start_date, "YYYY/MM/DD"),
-        end_date: moment(item.end_date, "YYYY/MM/DD")
-      }));
-  }, [appDataRate]);
-
-  const churnRateMap = React.useMemo(() => {
-    console.log("Converting therapists' churn rates into a map...");
-
-    const map = {};
-
-    years.forEach((year) => {
-      map[year] = appChurnRates
-        .filter((item) => item.start_date.year() >= year && item.end_date.year() <= year)
-        .sort((item1, item2) => item1.end_date.toDate() - item2.end_date.toDate());  // sort ascending
-    });
-    return map;
-  }, [years, appChurnRates]);
-
+  
   // View States
-  const [isOpen, setOpen] = useState(false);
-  const [selectedYear, setSelectedYear] = useState(years[years.length - 1]);
-  const [selectedRetentionRates, setSelectedRetentionRates] = useState(
-    retentionRateMap[selectedYear].map((item) => item.value)
-  );
-  const [selectedChurnRates, setSelectedChurnRates] = useState(
-    churnRateMap[selectedYear].map((item) => item.value)
-  );
+  const [isYearPopUpOpen, setIsYearPopUpOpen] = useState(false);
+  const [years, setYears] = useState([]);
+  const [retentionMap, setRetentionMap] = useState({});
+  const [churnMap, setChurnMap] = useState({});
+
+  const [selectedYear, setSelectedYear] = useState(null);
+  const [selectedRetentionRates, setSelectedRetentionRates] = useState(null);
+  const [selectedChurnRates, setSelectedChurnRates] = useState(null);
 
   // View Actions
-  const getMonthlyMap = React.useCallback(() => ({
-    0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0,
-    6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0
-  }), [])
-  const toggleDropdown = React.useCallback(() => setOpen(!isOpen), [isOpen]);
-  const selectYear = React.useCallback((year) => {
-    setOpen(!isOpen);
+  const toggleDropdown = React.useCallback(() => (
+    setIsYearPopUpOpen(!isYearPopUpOpen)
+  ), [isYearPopUpOpen]);
 
+  const selectYear = React.useCallback((year) => {
+    setIsYearPopUpOpen(!isYearPopUpOpen);
     setSelectedYear(year);
 
-    let monthlyMap = getMonthlyMap();
-    retentionRateMap[year].forEach((item) => {
-      monthlyMap[item.start_date.month()] = item.value
-    });
-    setSelectedRetentionRates(Object.entries(monthlyMap).map(item => item[1]));
+    setSelectedRetentionRates(toMonthlyValues(retentionMap[year]));
+    setSelectedChurnRates(toMonthlyValues(churnMap[year]));
+  }, [retentionMap, churnMap, isYearPopUpOpen]);
 
-    monthlyMap = getMonthlyMap();
-    churnRateMap[year].forEach((item) => {
-      monthlyMap[item.start_date.month()] = item.value
-    });
-    setSelectedChurnRates(Object.entries(monthlyMap).map(item => item[1]));
+  // Data preparations
+  const token = React.useMemo(() => localStorage.getItem('token'), []);
 
-  }, [retentionRateMap, churnRateMap, isOpen, getMonthlyMap]);
+  React.useMemo(() => {
+    getTherapistRateMap(token).then(map => {
+      const {years, retentionMap, churnMap} = map;
+      const latestYear = years[years.length - 1];
+
+      setYears(years);
+      setRetentionMap(retentionMap);
+      setChurnMap(churnMap);
+
+      setSelectedYear(latestYear);
+      setSelectedRetentionRates(toMonthlyValues(retentionMap[latestYear]));
+      setSelectedChurnRates(toMonthlyValues(churnMap[latestYear]));
+    });
+  }, [token]);
   
   React.useEffect(() => {
     let config = {
@@ -239,10 +172,10 @@ export default function CardBarChart2() {
       <div className="py-5">
         <div className='dropdown'>
           <div className='dropdown-header' onClick={toggleDropdown}>
-            Selected Year : {selectedYear}
-            <i className={`fa fa-chevron-right icon ${isOpen && "open"}`}></i>
+            {selectedYear ? `Selected Year : ${selectedYear}` : 'Select Year'}
+            <i className={`fa fa-chevron-right icon ${isYearPopUpOpen && "open"}`}></i>
           </div>
-          <div className={`dropdown-body ${isOpen && 'open'}`}>
+          <div className={`dropdown-body ${isYearPopUpOpen && 'open'}`}>
             {yearItemViews}
           </div>
         </div>
