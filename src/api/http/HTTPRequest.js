@@ -222,7 +222,11 @@ export class HTTPRequest {
                 return `${snakeCaseKey}=${queryValue.toString()}`;
             });
 
-        return queryValues.join('&');
+        const values = queryValues.join("&");
+        if (values) {
+            return "?" + values;
+        }
+        return "";
     }
 
     /**
